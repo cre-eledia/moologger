@@ -114,19 +114,19 @@ class Logger extends AbstractLogger {
      * Class constructor
      *
      * @param string $logDirectory      File path to the logging directory
-     * @param string $logLevelThreshold The LogLevel Threshold
+     * @param string $loglevelthreshold The LogLevel Threshold
      * @param array  $options
      *
      * @internal param string $logFilePrefix The prefix for the log file name
      * @internal param string $logFileExt The extension for the log file
      */
     public function __construct($logdirectory, $loglevelthreshold = LogLevel::DEBUG, array $options = []) {
-        $this->logLevelThreshold = $loglevelthreshold;
+        $this->loglevelthreshold = $loglevelthreshold;
         $this->options = array_merge($this->options, $options);
 
         $logdirectory = rtrim($logdirectory, DIRECTORY_SEPARATOR);
         if ( ! file_exists($logdirectory)) {
-            mkdir($logdirectory, $this->defaultPermissions, true);
+            mkdir($logdirectory, $this->defaultpermissions, true);
         }
 
         if(strpos($logdirectory, 'php://') === 0) {
@@ -134,13 +134,13 @@ class Logger extends AbstractLogger {
             $this->setFileHandle('w+');
         } else {
             $this->setLogFilePath($logdirectory);
-            if(file_exists($this->logFilePath) && !is_writable($this->logFilePath)) {
+            if(file_exists($this->logfilepath) && !is_writable($this->logfilepath)) {
                 throw new RuntimeException('The file could not be written to. Check that appropriate permissions have been set.');
             }
             $this->setFileHandle('a');
         }
 
-        if ( ! $this->fileHandle) {
+        if ( ! $this->filehandle) {
             throw new RuntimeException('The file could not be opened. Check permissions.');
         }
     }
@@ -149,7 +149,7 @@ class Logger extends AbstractLogger {
      * @param string $stdOutPath
      */
     public function setlogtostdout($stdoutpath) {
-        $this->logFilePath = $stdoutpath;
+        $this->logfilepath = $stdoutpath;
     }
 
     /**
@@ -158,23 +158,23 @@ class Logger extends AbstractLogger {
     public function setlogfilepath($logdirectory) {
         if ($this->options['filename']) {
             if (strpos($this->options['filename'], '.log') !== false || strpos($this->options['filename'], '.txt') !== false) {
-                $this->logFilePath = $logdirectory.DIRECTORY_SEPARATOR.$this->options['filename'];
+                $this->logfilepath = $logdirectory.DIRECTORY_SEPARATOR.$this->options['filename'];
             }
             else {
-                $this->logFilePath = $logdirectory.DIRECTORY_SEPARATOR.$this->options['filename'].'.'.$this->options['extension'];
+                $this->logfilepath = $logdirectory.DIRECTORY_SEPARATOR.$this->options['filename'].'.'.$this->options['extension'];
             }
         } else {
-            $this->logFilePath = $logdirectory.DIRECTORY_SEPARATOR.$this->options['prefix'].date('Y-m-d').'.'.$this->options['extension'];
+            $this->logfilepath = $logdirectory.DIRECTORY_SEPARATOR.$this->options['prefix'].date('Y-m-d').'.'.$this->options['extension'];
         }
     }
 
     /**
      * @param $writeMode
      *
-     * @internal param resource $fileHandle
+     * @internal param resource $filehandle
      */
     public function setfilehandle($writemode) {
-        $this->fileHandle = fopen($this->logFilePath, $writemode);
+        $this->filehandle = fopen($this->logfilepath, $writemode);
     }
 
 
@@ -182,8 +182,8 @@ class Logger extends AbstractLogger {
      * Class destructor
      */
     public function __destruct() {
-        if ($this->fileHandle) {
-            fclose($this->fileHandle);
+        if ($this->filehandle) {
+            fclose($this->filehandle);
         }
     }
 
@@ -199,10 +199,10 @@ class Logger extends AbstractLogger {
     /**
      * Sets the Log Level Threshold
      *
-     * @param string $logLevelThreshold The log level threshold
+     * @param string $loglevelthreshold The log level threshold
      */
     public function setloglevelthreshold($loglevelthreshold) {
-        $this->logLevelThreshold = $loglevelthreshold;
+        $this->loglevelthreshold = $loglevelthreshold;
     }
 
     /**
@@ -214,7 +214,7 @@ class Logger extends AbstractLogger {
      * @return null
      */
     public function log($level, $message, array $context = []) {
-        if ($this->logLevels[$this->logLevelThreshold] < $this->logLevels[$level]) {
+        if ($this->loglevels[$this->loglevelthreshold] < $this->loglevels[$level]) {
             return;
         }
         $message = $this->formatMessage($level, $message, $context);
@@ -228,15 +228,15 @@ class Logger extends AbstractLogger {
      * @return void
      */
     public function write($message) {
-        if (null !== $this->fileHandle) {
-            if (fwrite($this->fileHandle, $message) === false) {
+        if (null !== $this->filehandle) {
+            if (fwrite($this->filehandle, $message) === false) {
                 throw new RuntimeException('The file could not be written to. Check that appropriate permissions have been set.');
             } else {
-                $this->lastLine = trim($message);
-                $this->logLineCount++;
+                $this->lastline = trim($message);
+                $this->loglinecount++;
 
-                if ($this->options['flushFrequency'] && $this->logLineCount % $this->options['flushFrequency'] === 0) {
-                    fflush($this->fileHandle);
+                if ($this->options['flushFrequency'] && $this->loglinecount % $this->options['flushFrequency'] === 0) {
+                    fflush($this->filehandle);
                 }
             }
         }
@@ -248,7 +248,7 @@ class Logger extends AbstractLogger {
      * @return string
      */
     public function getlogfilepath() {
-        return $this->logFilePath;
+        return $this->logfilepath;
     }
 
     /**
@@ -257,7 +257,7 @@ class Logger extends AbstractLogger {
      * @return string
      */
     public function getlastlogline() {
-        return $this->lastLine;
+        return $this->lastline;
     }
 
     /**
@@ -274,7 +274,7 @@ class Logger extends AbstractLogger {
                 'date'          => $this->getTimestamp(),
                 'level'         => strtoupper($level),
                 'level-padding' => str_repeat(' ', 9 - strlen($level)),
-                'priority'      => $this->logLevels[$level],
+                'priority'      => $this->loglevels[$level],
                 'message'       => $message,
                 'context'       => json_encode($context),
             ];
@@ -346,4 +346,5 @@ class Logger extends AbstractLogger {
         return $indent.str_replace("\n", "\n".$indent, $string);
     }
 }
+
 
