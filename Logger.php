@@ -30,12 +30,10 @@ use Psr\Log\LogLevel;
  * @since   July 26, 2008
  * @link    https://github.com/katzgrau/KLogger
  * @version 1.0.0
- * @package auth_eledia_system_order
  */
 
 /**
  * Class documentation
- * @package auth_eledia_system_order
  */
 class Logger extends AbstractLogger {
 
